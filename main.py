@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from engine.order import Order
 from engine.order_book import OrderBook
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.proxy_headers import ProxyHeadersMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Real-Time Stock Order Matching Engine",
