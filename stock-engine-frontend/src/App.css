@@ -1,0 +1,30 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  margin: 0;
+}
+
+.container {
+  padding: 30px;
+  text-align: center;
+}
+
+.order-form {
+  margin-bottom: 30px;
+}
+
+input, select {
+  margin: 5px;
+  padding: 8px;
+}
+
+button {
+  padding: 8px 15px;
+  cursor: pointer;
+}
+
+.sections {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+}
