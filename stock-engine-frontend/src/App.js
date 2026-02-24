@@ -138,8 +138,19 @@ function App() {
               className="trade-card"
               style={{ color: trade.price >= 100 ? "#22c55e" : "#ef4444" }}
             >
-              <strong>Price:</strong> {trade.price} |
-              <strong> Qty:</strong> {trade.quantity}
+              <div>
+                <strong>Price:</strong> {trade.price} | 
+                <strong> Qty:</strong> {trade.quantity}
+              </div>
+
+              <div style={{ fontSize: "12px", opacity: 0.7 }}>
+                Buyer: {trade.buyer_order_id?.slice(0, 8)} | 
+                Seller: {trade.seller_order_id?.slice(0, 8)}
+              </div>
+
+              <div style={{ fontSize: "11px", opacity: 0.6 }}>
+                Time: {trade.timestamp ? new Date(trade.timestamp * 1000).toLocaleTimeString() : "N/A"}
+              </div>
             </div>
           ))
         )}

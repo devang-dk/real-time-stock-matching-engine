@@ -1,5 +1,6 @@
 import heapq
 from engine.order import Order
+import time
 
 class OrderBook:
     def __init__(self):
@@ -38,7 +39,8 @@ class OrderBook:
                     "price": trade_price,
                     "quantity": trade_quantity,
                     "buyer_order_id": best_buy.order_id,
-                    "seller_order_id": best_sell.order_id
+                    "seller_order_id": best_sell.order_id,
+                    "timestamp": time.time()
                 })
 
                 # Reduce quantities
