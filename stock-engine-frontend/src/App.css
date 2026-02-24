@@ -1,30 +1,98 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f6f8;
+  background-color: #0f172a;
+  color: #e2e8f0;
   margin: 0;
+  padding: 0;
 }
 
 .container {
-  padding: 30px;
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+h1 {
   text-align: center;
+  margin-bottom: 30px;
+  font-size: 26px;
+  color: #38bdf8;
 }
 
 .order-form {
-  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
 }
 
-input, select {
-  margin: 5px;
+.order-form input,
+.order-form select {
   padding: 8px;
+  font-size: 14px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 6px;
 }
 
-button {
-  padding: 8px 15px;
+.order-form input:focus,
+.order-form select:focus {
+  outline: none;
+  border: 1px solid #38bdf8;
+}
+
+.order-form button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
   cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.order-form button:hover {
+  background-color: #1d4ed8;
 }
 
 .sections {
   display: flex;
-  justify-content: space-around;
-  margin-top: 30px;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.section-box {
+  width: 48%;
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.buy {
+  color: #22c55e;
+}
+
+.sell {
+  color: #ef4444;
+}
+
+.trades-section {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.trade-card {
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background-color: #334155;
+  transition: 0.2s ease;
+}
+
+.trade-card:hover {
+  background-color: #475569;
 }

@@ -27,7 +27,7 @@ function App() {
   const fetchTrades = async () => {
     try {
       const response = await axios.get(`${API_BASE}/trades`);
-      console.log("Trades:", trades);
+      console.log("Trades:", response.data);  // ADD THIS LINE
       setTrades(response.data);
     } catch (error) {
       console.error("Error fetching trades", error);
@@ -89,28 +89,60 @@ function App() {
       </div>
 
       <div className="sections">
-        <div>
-          <h2>Buy Orders</h2>
-          {orderBook.buy_orders?.map((order, index) => (
-            <p key={index}>Price: {order.price} | Qty: {order.quantity}</p>
-          ))}
+        <div className="section-box">
+          <h2 className="buy">Buy Orders</h2>
+          <p>
+            <strong>Total Volume: </strong>
+            {orderBook.buy_orders?.reduce((sum, o) => sum + o.quantity, 0)}
+          </p>
+          {orderBook.buy_orders?.length === 0 ? (
+            <p>No Buy Orders</p>
+          ) : (
+            orderBook.buy_orders.map((order, index) => (
+              <p key={index}>
+                Price: {order.price} | Qty: {order.quantity}
+              </p>
+              
+            ))
+          )}
         </div>
 
-        <div>
-          <h2>Sell Orders</h2>
-          {orderBook.buy_orders?.map((order, index) => (
-            <p key={index}>Price: {order.price} | Qty: {order.quantity}</p>
-          ))}
+        <div className="section-box">
+          <h2 className="sell">Sell Orders</h2>
+          <p>
+            <strong>Total Volume: </strong>
+            {orderBook.sell_orders?.reduce((sum, o) => sum + o.quantity, 0)}
+          </p>
+          {orderBook.sell_orders?.length === 0 ? (
+            <p>No Sell Orders</p>
+          ) : (
+            orderBook.sell_orders.map((order, index) => (
+              <p key={index}>
+                Price: {order.price} | Qty: {order.quantity}
+              </p>
+            ))
+          )}
         </div>
       </div>
 
-      <div>
+          
+      <div className="trades-section">
         <h2>Recent Trades</h2>
-        {trades.map((trade, index) => (
-          <p key={index}>
-            Price: {trade.price} | Quantity: {trade.quantity}
-          </p>
-        ))}
+
+        {trades.length === 0 ? (
+          <p>No Trades Executed</p>
+        ) : (
+          trades.map((trade, index) => (
+            <div
+              key={index}
+              className="trade-card"
+              style={{ color: trade.price >= 100 ? "#22c55e" : "#ef4444" }}
+            >
+              <strong>Price:</strong> {trade.price} |
+              <strong> Qty:</strong> {trade.quantity}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
