@@ -17,10 +17,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-order_book = OrderBook()
+order_books = {}
 
 
 class OrderRequest(BaseModel):
+    symbol: str
     order_type: str
     price: float
     quantity: int
@@ -28,10 +29,11 @@ class OrderRequest(BaseModel):
 
 @app.post("/place-order")
 def place_order(order_data: OrderRequest):
-    if order_data.price <= 0 or order_data.quantity <= 0:
-        return {"error": "Price and Quantity must be positive"}
+    symbol = order_data.symbol.upper()
+    if symbol not in order_books:
+        order_books[symbol] = OrderBook()
     order = Order(order_data.order_type.upper(), order_data.price, order_data.quantity)
-    order_book.add_order(order)
+    order_books[symbol].add_order(order)
     return {
         "message": "Order placed",
         "order_id": order.order_id
@@ -45,7 +47,14 @@ def cancel_order(order_id: str):
 
 
 @app.get("/order-book")
-def get_order_book():
+def get_order_book(symbol: str):
+    symbol = symbol.upper()
+
+    if symbol not in order_books:
+        return {"buy_orders": [], "sell_orders": []}
+
+    order_book = order_books[symbol]
+
     return {
         "buy_orders": [
             {"price": o.price, "quantity": o.quantity}
@@ -61,8 +70,13 @@ def get_order_book():
 
 
 @app.get("/trades")
-def get_trades():
-    return order_book.trades
+def get_trades(symbol: str):
+    symbol = symbol.upper()
+
+    if symbol not in order_books:
+        return []
+
+    return order_books[symbol].trades
 
 @app.get("/")
 def health_check():

@@ -4,6 +4,7 @@ import "./App.css";
 
 const API_BASE = "https://ronndev.duckdns.org";
 
+
 function App() {
   const [orderType, setOrderType] = useState("buy");
   const [price, setPrice] = useState("");
@@ -13,10 +14,11 @@ function App() {
     sell_orders: []
   });
   const [trades, setTrades] = useState([]);
+  const [symbol, setSymbol] = useState("AAPL");
 
   const fetchOrderBook = async () => {
   try {
-    const response = await axios.get(`${API_BASE}/order-book`);
+    const response = await axios.get(`${API_BASE}/order-book?symbol=${symbol}`);
     console.log(response.data);   // ADD THIS LINE
     setOrderBook(response.data);
   } catch (error) {
@@ -26,7 +28,7 @@ function App() {
 
   const fetchTrades = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/trades`);
+      const response = await axios.get(`${API_BASE}/trades?symbol=${symbol}`);
       console.log("Trades:", response.data);  // ADD THIS LINE
       setTrades(response.data);
     } catch (error) {
@@ -37,9 +39,10 @@ function App() {
   const placeOrder = async () => {
     try {
       await axios.post(`${API_BASE}/place-order`, {
+        symbol: symbol,
         order_type: orderType,
         price: Number(price),
-        quantity: Number(quantity),
+        quantity: Number(quantity)
       });
       setPrice("");
       setQuantity("");
@@ -53,17 +56,29 @@ function App() {
   useEffect(() => {
     fetchOrderBook();
     fetchTrades();
+
     const interval = setInterval(() => {
       fetchOrderBook();
       fetchTrades();
     }, 3000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [symbol]);
 
   return (
     <div className="container">
       <h1>Real-Time Stock Matching Engine</h1>
-
+      <div style={{ marginBottom: "20px" }}>
+          <label>Select Stock: </label>
+          <select
+            value={symbol}
+            onChange={(e) => setSymbol(e.target.value)}
+          >
+            <option value="AAPL">AAPL</option>
+            <option value="TSLA">TSLA</option>
+            <option value="BTC">BTC</option>
+          </select>
+        </div>
       <div className="order-form">
         <h2>Place Order</h2>
         <select value={orderType} onChange={(e) => setOrderType(e.target.value)}>
