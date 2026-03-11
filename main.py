@@ -6,6 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 from database import engine
+from sqlmodel import Session
+from models import User
+from auth import hash_password
+from pydantic import BaseModel
+from auth import verify_password, create_access_token
+from auth import get_current_user
 import models
 
 
@@ -34,7 +40,7 @@ class OrderRequest(BaseModel):
 
 
 @app.post("/place-order")
-def place_order(order_data: OrderRequest):
+def place_order(order_data: OrderRequest, user_id: int = Depends(get_current_user)):
     symbol = order_data.symbol.upper()
     if symbol not in order_books:
         order_books[symbol] = OrderBook()
@@ -91,3 +97,51 @@ def health_check():
 @app.get("/")
 def health():
     return {"status": "Stock Matching Engine Running"}
+
+
+
+class RegisterRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+
+
+@app.post("/register")
+def register_user(user_data: RegisterRequest):
+    with Session(engine) as session:
+
+        user = User(
+            username=user_data.username,
+            email=user_data.email,
+            password=hash_password(user_data.password)
+        )
+
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        return {"message": "User registered successfully"}
+
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/login")
+def login(user_data: LoginRequest):
+
+    with Session(engine) as session:
+
+        user = session.query(User).filter(User.email == user_data.email).first()
+
+        if not user:
+            return {"error": "User not found"}
+
+        if not verify_password(user_data.password, user.password):
+            return {"error": "Invalid password"}
+
+        token = create_access_token({"user_id": user.id})
+
+        return {"access_token": token}
