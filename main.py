@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 from database import engine
+import models
 
 
 app = FastAPI(
