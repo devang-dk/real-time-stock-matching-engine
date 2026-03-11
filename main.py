@@ -7,12 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 from database import engine
 
-SQLModel.metadata.create_all(engine)
 
 app = FastAPI(
     title="Real-Time Stock Order Matching Engine",
     version="1.0.0"
 )
+
+SQLModel.metadata.create_all(engine)
 
 app.add_middleware(
     CORSMiddleware,
