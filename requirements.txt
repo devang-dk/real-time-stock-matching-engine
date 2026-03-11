@@ -3,4 +3,5 @@ uvicorn
 sqlmodel
 psycopg2-binary
 python-jose
+bcrypt==4.0.1
 passlib[bcrypt]
