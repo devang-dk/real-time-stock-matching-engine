@@ -4,6 +4,10 @@ from engine.order import Order
 from engine.order_book import OrderBook
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.cors import CORSMiddleware
+from sqlmodel import SQLModel
+from database import engine
+
+SQLModel.metadata.create_all(engine)
 
 app = FastAPI(
     title="Real-Time Stock Order Matching Engine",
