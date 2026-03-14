@@ -69,15 +69,18 @@ class OrderBook:
 
                 
 
-                loop = asyncio.get_event_loop()
-                loop.create_task(
-                    manager.broadcast({
-                        "type": "ticker",
-                        "symbol": best_buy.symbol,
-                        "price": trade_price,
-                        "quantity": trade_quantity
-                    })
-                )
+                try:
+                    loop = asyncio.get_running_loop()
+                    loop.create_task(
+                        manager.broadcast({
+                            "type": "ticker",
+                            "symbol": best_buy.symbol,
+                            "price": trade_price,
+                            "quantity": trade_quantity
+                        })
+                    )
+                except RuntimeError:
+                    pass
 
                 with Session(engine) as session:
                     settle_trade(
