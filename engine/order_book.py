@@ -6,6 +6,7 @@ from sqlmodel import Session
 from database import engine
 import asyncio
 from websocket_manager import manager   
+from market_data import update_ticker
     
 
 class OrderBook:
