@@ -7,13 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 from database import engine
 from sqlmodel import Session
-from models import User
+from models import User, Holding, Trade
 from auth import hash_password
 from pydantic import BaseModel
 from auth import verify_password, create_access_token
 from auth import get_current_user
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends
+from sqlmodel import select
 import models
 
 
@@ -154,6 +155,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     
 
 
+
+
 @app.get("/portfolio")
 def get_portfolio(user_id: int = Depends(get_current_user)):
 
@@ -161,7 +164,8 @@ def get_portfolio(user_id: int = Depends(get_current_user)):
 
         user = session.get(User, user_id)
 
-        holdings = session.query(Holding).filter(Holding.user_id == user_id).all()
+        statement = select(Holding).where(Holding.user_id == user_id)
+        holdings = session.exec(statement).all()
 
         return {
             "balance": user.balance,
