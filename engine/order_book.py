@@ -4,6 +4,8 @@ import time
 from engine.settlement import settle_trade
 from sqlmodel import Session
 from database import engine
+import asyncio
+from websocket_manager import manager   
     
 
 class OrderBook:
@@ -36,6 +38,7 @@ class OrderBook:
 
                 trade_quantity = min(best_buy.quantity, best_sell.quantity)
                 trade_price = best_sell.price  # usually trade at sell price
+                update_ticker(best_buy.symbol, trade_price, trade_quantity)
 
                 print(f"Trade Executed: {trade_quantity} units at {trade_price}")
 
@@ -46,6 +49,31 @@ class OrderBook:
                     "seller_order_id": best_sell.order_id,
                     "timestamp": time.time()
                 })
+
+                asyncio.create_task(
+                    manager.broadcast({
+                        "type": "trade",
+                        "symbol": best_buy.symbol,
+                        "price": trade_price,
+                        "quantity": trade_quantity
+                    })  
+                )
+
+                asyncio.create_task(
+                    manager.broadcast({
+                        "type": "orderbook",
+                        "symbol": best_buy.symbol
+                    })
+                )
+
+                asyncio.create_task(
+                    manager.broadcast({
+                        "type": "ticker",
+                        "symbol": best_buy.symbol,
+                        "price": trade_price,
+                        "quantity": trade_quantity
+                    })
+                )
 
                 with Session(engine) as session:
                     settle_trade(

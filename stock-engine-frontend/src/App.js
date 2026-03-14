@@ -53,6 +53,24 @@ function App() {
     }
   };
 
+  const ws = new WebSocket("ws://ronndev.duckdns.org/ws");
+
+  ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "trade") {
+          console.log("New trade:", data);
+      }
+
+      if (data.type === "orderbook") {
+          fetchOrderBook();
+      }
+
+      if (data.type === "ticker") {
+        setLastPrice(data.price);
+      }
+  };
+
   useEffect(() => {
     fetchOrderBook();
     fetchTrades();

@@ -17,7 +17,10 @@ from fastapi import Depends
 from sqlmodel import select
 from fastapi import HTTPException
 import uuid
+from market_data import get_ticker
 import time
+from fastapi import WebSocket, WebSocketDisconnect
+from websocket_manager import manager
 import models
 
 
@@ -224,3 +227,42 @@ def get_orders(user_id: int = Depends(get_current_user)):
         orders = session.exec(statement).all()
 
         return orders
+    
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+
+    await manager.connect(websocket)
+
+    try:
+        while True:
+            await websocket.receive_text()
+
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+
+
+@app.get("/ticker")
+def get_market_ticker(symbol: str):
+
+    symbol = symbol.upper()
+
+    ticker = get_ticker(symbol)
+
+    if symbol in order_books:
+
+        order_book = order_books[symbol]
+
+        best_bid = None
+        best_ask = None
+
+        if order_book.buy_heap:
+            best_bid = -order_book.buy_heap[0][0]
+
+        if order_book.sell_heap:
+            best_ask = order_book.sell_heap[0][0]
+
+        ticker["best_bid"] = best_bid
+        ticker["best_ask"] = best_ask
+
+    return ticker
