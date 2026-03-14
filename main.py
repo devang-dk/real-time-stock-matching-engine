@@ -12,6 +12,8 @@ from auth import hash_password
 from pydantic import BaseModel
 from auth import verify_password, create_access_token
 from auth import get_current_user
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import Depends
 import models
 
 
@@ -129,22 +131,26 @@ class LoginRequest(BaseModel):
     password: str
 
 
+
+
 @app.post("/login")
-def login(user_data: LoginRequest):
-
+def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    
     with Session(engine) as session:
-
-        user = session.query(User).filter(User.email == user_data.email).first()
+        user = session.query(User).filter(User.username == form_data.username).first()
 
         if not user:
-            return {"error": "User not found"}
+            raise HTTPException(status_code=400, detail="Invalid credentials")
 
-        if not verify_password(user_data.password, user.password):
-            return {"error": "Invalid password"}
+        if not verify_password(form_data.password, user.password):
+            raise HTTPException(status_code=400, detail="Invalid credentials")
 
         token = create_access_token({"user_id": user.id})
 
-        return {"access_token": token}
+        return {
+            "access_token": token,
+            "token_type": "bearer"
+        }
     
 
 
