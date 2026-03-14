@@ -184,3 +184,17 @@ def get_portfolio(user_id: int = Depends(get_current_user)):
             "balance": user.balance,
             "holdings": holdings
         }
+
+
+@app.get("/trade-history")
+def get_trade_history(user_id: int = Depends(get_current_user)):
+
+    with Session(engine) as session:
+
+        statement = select(Trade).where(
+            (Trade.buyer_id == user_id) | (Trade.seller_id == user_id)
+        )
+
+        trades = session.exec(statement).all()
+
+        return trades
