@@ -67,7 +67,10 @@ class OrderBook:
                     })
                 )
 
-                asyncio.run(
+                
+
+                loop = asyncio.get_event_loop()
+                loop.create_task(
                     manager.broadcast({
                         "type": "ticker",
                         "symbol": best_buy.symbol,
