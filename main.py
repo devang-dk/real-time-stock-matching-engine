@@ -145,3 +145,19 @@ def login(user_data: LoginRequest):
         token = create_access_token({"user_id": user.id})
 
         return {"access_token": token}
+    
+
+
+@app.get("/portfolio")
+def get_portfolio(user_id: int = Depends(get_current_user)):
+
+    with Session(engine) as session:
+
+        user = session.get(User, user_id)
+
+        holdings = session.query(Holding).filter(Holding.user_id == user_id).all()
+
+        return {
+            "balance": user.balance,
+            "holdings": holdings
+        }
