@@ -15,6 +15,9 @@ from auth import get_current_user
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends
 from sqlmodel import select
+from fastapi import HTTPException
+import uuid
+import time
 import models
 
 
@@ -44,11 +47,24 @@ class OrderRequest(BaseModel):
 
 @app.post("/place-order")
 def place_order(order_data: OrderRequest, user_id: int = Depends(get_current_user)):
+
     symbol = order_data.symbol.upper()
+
     if symbol not in order_books:
         order_books[symbol] = OrderBook()
-    order = Order(order_data.order_type.upper(), order_data.price, order_data.quantity)
+
+    order = Order(
+        order_id=str(uuid.uuid4()),
+        user_id=user_id,
+        symbol=symbol,
+        type=order_data.order_type.upper(),
+        price=order_data.price,
+        quantity=order_data.quantity,
+        timestamp=time.time()
+    )
+
     order_books[symbol].add_order(order)
+
     return {
         "message": "Order placed",
         "order_id": order.order_id
@@ -97,9 +113,6 @@ def get_trades(symbol: str):
 def health_check():
     return {"status": "Stock Matching Engine Running"}
 
-@app.get("/")
-def health():
-    return {"status": "Stock Matching Engine Running"}
 
 
 
