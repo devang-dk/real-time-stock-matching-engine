@@ -67,7 +67,7 @@ class OrderBook:
                     })
                 )
 
-                asyncio.create_task(
+                asyncio.run(
                     manager.broadcast({
                         "type": "ticker",
                         "symbol": best_buy.symbol,
