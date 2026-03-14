@@ -1,6 +1,9 @@
 import heapq
 from engine.order import Order
 import time
+from engine.settlement import settle_trade
+from sqlmodel import Session
+from database import engine
     
 
 class OrderBook:
@@ -43,6 +46,16 @@ class OrderBook:
                     "seller_order_id": best_sell.order_id,
                     "timestamp": time.time()
                 })
+
+                with Session(engine) as session:
+                    settle_trade(
+                        session,
+                        buyer_id=buy_order.user_id,
+                        seller_id=sell_order.user_id,
+                        symbol=symbol,
+                        price=trade_price,
+                        quantity=trade_qty
+                    )
 
                 # Reduce quantities
                 best_buy.quantity -= trade_quantity
