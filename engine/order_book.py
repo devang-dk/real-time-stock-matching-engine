@@ -51,26 +51,25 @@ class OrderBook:
                     "timestamp": time.time()
                 })
 
-                asyncio.create_task(
-                    manager.broadcast({
-                        "type": "trade",
-                        "symbol": best_buy.symbol,
-                        "price": trade_price,
-                        "quantity": trade_quantity
-                    })  
-                )
-
-                asyncio.create_task(
-                    manager.broadcast({
-                        "type": "orderbook",
-                        "symbol": best_buy.symbol
-                    })
-                )
-
-                
-
                 try:
                     loop = asyncio.get_running_loop()
+
+                    loop.create_task(
+                        manager.broadcast({
+                            "type": "trade",
+                            "symbol": best_buy.symbol,
+                            "price": trade_price,
+                            "quantity": trade_quantity
+                        })
+                    )
+
+                    loop.create_task(
+                        manager.broadcast({
+                            "type": "orderbook",
+                            "symbol": best_buy.symbol
+                        })
+                    )
+
                     loop.create_task(
                         manager.broadcast({
                             "type": "ticker",
@@ -79,6 +78,7 @@ class OrderBook:
                             "quantity": trade_quantity
                         })
                     )
+
                 except RuntimeError:
                     pass
 
