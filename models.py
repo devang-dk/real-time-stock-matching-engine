@@ -23,3 +23,13 @@ class Trade(SQLModel, table=True):
     symbol: str
     price: float
     quantity: int
+
+
+class OrderRecord(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int
+    symbol: str
+    order_type: str
+    price: float
+    quantity: int
+    status: str

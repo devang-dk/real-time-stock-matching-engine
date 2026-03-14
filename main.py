@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 from database import engine
 from sqlmodel import Session
-from models import User, Holding, Trade
+from models import User, Holding, Trade, OrderRecord
 from auth import hash_password
 from pydantic import BaseModel
 from auth import verify_password, create_access_token
@@ -62,6 +62,20 @@ def place_order(order_data: OrderRequest, user_id: int = Depends(get_current_use
         quantity=order_data.quantity,
         timestamp=time.time()
     )
+
+    with Session(engine) as session:
+
+        db_order = OrderRecord(
+            user_id=user_id,
+            symbol=symbol,
+            order_type=order_data.order_type,
+            price=order_data.price,
+            quantity=order_data.quantity,
+            status="OPEN"
+        )
+
+        session.add(db_order)
+        session.commit()
 
     order_books[symbol].add_order(order)
 
@@ -198,3 +212,15 @@ def get_trade_history(user_id: int = Depends(get_current_user)):
         trades = session.exec(statement).all()
 
         return trades
+    
+
+@app.get("/orders")
+def get_orders(user_id: int = Depends(get_current_user)):
+
+    with Session(engine) as session:
+
+        statement = select(OrderRecord).where(OrderRecord.user_id == user_id)
+
+        orders = session.exec(statement).all()
+
+        return orders
