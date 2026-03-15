@@ -266,3 +266,14 @@ def get_market_ticker(symbol: str):
         ticker["best_ask"] = best_ask
 
     return ticker
+
+
+@app.get("/depth")
+def get_market_depth(symbol: str):
+
+    symbol = symbol.upper()
+
+    if symbol not in order_books:
+        return {"bids": [], "asks": []}
+
+    return order_books[symbol].get_market_depth()

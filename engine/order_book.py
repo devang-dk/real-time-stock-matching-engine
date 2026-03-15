@@ -127,3 +127,34 @@ class OrderBook:
         for _, _, order in self.sell_heap:
             if order.quantity > 0:
                 print(order)
+
+
+    def get_market_depth(self):
+        bids = {}
+        asks = {}
+
+        # Aggregate BUY orders
+        for _, _, order in self.buy_heap:
+            if order.quantity > 0:
+                bids[order.price] = bids.get(order.price, 0) + order.quantity
+
+        # Aggregate SELL orders
+        for _, _, order in self.sell_heap:
+            if order.quantity > 0:
+                asks[order.price] = asks.get(order.price, 0) + order.quantity
+
+        # Convert to sorted lists
+        bid_levels = [
+            {"price": price, "quantity": qty}
+            for price, qty in sorted(bids.items(), reverse=True)
+        ]
+
+        ask_levels = [
+            {"price": price, "quantity": qty}
+            for price, qty in sorted(asks.items())
+        ]
+
+        return {
+            "bids": bid_levels,
+            "asks": ask_levels
+        }
