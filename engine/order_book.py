@@ -7,6 +7,7 @@ from database import engine
 import asyncio
 from websocket_manager import manager   
 from market_data import update_ticker
+from market_candles import update_candle
     
 
 class OrderBook:
@@ -42,6 +43,8 @@ class OrderBook:
                 update_ticker(best_buy.symbol, trade_price, trade_quantity)
 
                 print(f"Trade Executed: {trade_quantity} units at {trade_price}")
+
+                update_candle(best_buy.symbol, trade_price, trade_quantity, time.time())
 
                 self.trades.append({
                     "price": trade_price,

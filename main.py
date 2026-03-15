@@ -22,6 +22,7 @@ import time
 from fastapi import WebSocket, WebSocketDisconnect
 from websocket_manager import manager
 import models
+from market_candles import candles
 
 
 app = FastAPI(
@@ -277,3 +278,15 @@ def get_market_depth(symbol: str):
         return {"bids": [], "asks": []}
 
     return order_books[symbol].get_market_depth()
+
+
+@app.get("/candles")
+def get_candles(symbol: str):
+
+    result = []
+
+    for key, candle in candles.items():
+        if candle["symbol"] == symbol.upper():
+            result.append(candle)
+
+    return result
